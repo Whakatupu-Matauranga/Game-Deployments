@@ -107,27 +107,5 @@
       };
       document.body.appendChild(script);
     </script>
-        <script>
-        function scaleGame() {
-            const baseWidth = 450;
-            const baseHeight = 800;
-
-            const scaleX = window.innerWidth / baseWidth;
-            const scaleY = window.innerHeight / baseHeight;
-
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-            const scale = isMobile
-                ? Math.max(scaleX, scaleY)   // fill screen
-                : Math.min(scaleX, scaleY);  // fit inside
-
-            document.getElementById("unity-holder")
-                .style.transform = `scale(${scale})`;
-        }
-
-        window.addEventListener("resize", scaleGame);
-        window.addEventListener("orientationchange", scaleGame);
-        scaleGame();
-    </script>
   </body>
 </html>
