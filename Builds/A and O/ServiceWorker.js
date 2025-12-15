@@ -1,9 +1,9 @@
 const cacheName = "Te Wānanga O Raukawa-A or O-1.0";
 const contentToCache = [
-    "Build/Builds.loader.js",
-    "Build/Builds.framework.js",
-    "Build/Builds.data",
-    "Build/Builds.wasm",
+    "Build/A and O.loader.js",
+    "Build/A and O.framework.js",
+    "Build/A and O.data",
+    "Build/A and O.wasm",
     "TemplateData/style.css"
 
 ];
