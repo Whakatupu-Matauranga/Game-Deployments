@@ -7,10 +7,13 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
+      <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
   </head>
   <body>
     <div id="unity-container">
-      <canvas id="unity-canvas" width=450 height=800 tabindex="-1"></canvas>
+        <div id="unity-holder">
+            <canvas id="unity-canvas" width=450 height=800 tabindex="-1"></canvas>
+        </div>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -76,21 +79,6 @@
         // },
       };
 
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-      }
-
 
       loadingBar.style.display = "block";
 
@@ -107,5 +95,34 @@
       };
       document.body.appendChild(script);
     </script>
+
+    <script>
+        function scaleGame() {
+            const baseWidth = 450;
+            const baseHeight = 800;
+
+            const scaleToFit = Math.min(
+                window.innerWidth / baseWidth,
+                window.innerHeight / baseHeight
+            );
+
+            // itch-style behaviour:
+            // - desktop: never upscale
+            // - phone: scale to fit
+            const scale =
+                window.innerWidth <= 768
+                    ? scaleToFit
+                    : Math.min(scaleToFit, 1);
+
+            document.getElementById("unity-holder")
+                .style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener("resize", scaleGame);
+        window.addEventListener("orientationchange", scaleGame);
+        scaleGame();
+    </script>
+
+
   </body>
 </html>
