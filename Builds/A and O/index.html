@@ -101,18 +101,14 @@
             const baseWidth = 450;
             const baseHeight = 800;
 
-            const scaleToFit = Math.min(
-                window.innerWidth / baseWidth,
-                window.innerHeight / baseHeight
-            );
+            const scaleX = window.innerWidth / baseWidth;
+            const scaleY = window.innerHeight / baseHeight;
 
-            // itch-style behaviour:
-            // - desktop: never upscale
-            // - phone: scale to fit
-            const scale =
-                window.innerWidth <= 768
-                    ? scaleToFit
-                    : Math.min(scaleToFit, 1);
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            const scale = isMobile
+                ? Math.max(scaleX, scaleY)   // fill screen
+                : Math.min(scaleX, scaleY);  // fit inside
 
             document.getElementById("unity-holder")
                 .style.transform = `scale(${scale})`;
@@ -122,7 +118,6 @@
         window.addEventListener("orientationchange", scaleGame);
         scaleGame();
     </script>
-
 
   </body>
 </html>
