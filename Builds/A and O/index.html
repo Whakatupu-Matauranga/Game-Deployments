@@ -4,24 +4,38 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity Web Player | A or O</title>
+
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
-      <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+
+    <meta name="viewport"
+          content="width=device-width, height=device-height,
+                   initial-scale=1, maximum-scale=1, user-scalable=no">
   </head>
+
   <body>
     <div id="unity-container">
-        <div id="unity-holder">
-            <canvas id="unity-canvas" width=450 height=800 tabindex="-1"></canvas>
-        </div>
+      <div id="unity-holder">
+        <canvas id="unity-canvas"
+                width="450"
+                height="800"
+                tabindex="-1"></canvas>
+      </div>
+
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
+
+      <div id="unity-warning"></div>
+
     </div>
+
+    <!-- CLEAN UP ANY OLD SERVICE WORKERS / CACHES -->
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.getRegistrations().then(regs => {
@@ -31,99 +45,102 @@
           keys.forEach(k => caches.delete(k));
         });
       }
+    </script>
 
-
-
+    <script>
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
       function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        function updateVisibility() {
+          warningBanner.style.display =
+            warningBanner.children.length ? "block" : "none";
         }
-        var div = document.createElement('div');
+        var div = document.createElement("div");
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
+
+        if (type === "error") {
+          div.style = "background:red;padding:10px;";
+        } else if (type === "warning") {
+          div.style = "background:yellow;padding:10px;";
+          setTimeout(() => {
             warningBanner.removeChild(div);
-            updateBannerVisibility();
+            updateVisibility();
           }, 5000);
         }
-        updateBannerVisibility();
+        updateVisibility();
       }
 
+      /* CHANGE THIS ONLY WHEN YOU WANT TO VERSION BUILDS */
       var buildUrl = "Build";
+
       var loaderUrl = buildUrl + "/A and O.loader.js";
+
       var config = {
         arguments: [],
         dataUrl: buildUrl + "/A and O.data",
         frameworkUrl: buildUrl + "/A and O.framework.js",
+
         codeUrl: buildUrl + "/A and O.wasm",
+
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Te Wānanga O Raukawa",
         productName: "A or O",
         productVersion: "1.0",
-        showBanner: unityShowBanner,
 
+        /* ⚡ FAST + AUTO UPDATE CACHE STRATEGY */
         cacheControl: (url) => {
           if (url.match(/\.data|\.wasm|\.framework\.js/)) {
-            return "no-store";
+            return "must-revalidate";
           }
           return "default";
-        }
-      };
+        },
 
+        showBanner: unityShowBanner
+      };
 
 
       loadingBar.style.display = "block";
 
       var script = document.createElement("script");
       script.src = loaderUrl;
+
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
+          progressBarFull.style.width = (100 * progress) + "%";
+        }).then(() => {
           loadingBar.style.display = "none";
-        }).catch((message) => {
-          alert(message);
-        });
+        }).catch(alert);
       };
+
       document.body.appendChild(script);
     </script>
 
+    <!-- RESPONSIVE SCALING -->
     <script>
-        function scaleGame() {
-            const baseWidth = 450;
-            const baseHeight = 800;
+      function scaleGame() {
+        const baseWidth = 450;
+        const baseHeight = 800;
 
-            const scaleX = window.innerWidth / baseWidth;
-            const scaleY = window.innerHeight / baseHeight;
+        const scaleX = window.innerWidth / baseWidth;
+        const scaleY = window.innerHeight / baseHeight;
 
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const scale = isMobile
+          ? Math.max(scaleX, scaleY)
+          : Math.min(scaleX, scaleY);
 
-            const scale = isMobile
-                ? Math.max(scaleX, scaleY)   // fill screen
-                : Math.min(scaleX, scaleY);  // fit inside
+        document.getElementById("unity-holder")
+          .style.transform = `scale(${scale})`;
+      }
 
-            document.getElementById("unity-holder")
-                .style.transform = `scale(${scale})`;
-        }
-
-        window.addEventListener("resize", scaleGame);
-        window.addEventListener("orientationchange", scaleGame);
-        scaleGame();
+      window.addEventListener("resize", scaleGame);
+      window.addEventListener("orientationchange", scaleGame);
+      scaleGame();
     </script>
 
   </body>
